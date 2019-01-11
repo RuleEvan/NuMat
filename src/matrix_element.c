@@ -10,14 +10,6 @@ double compute_matrix_element_TT(int iv) {
   // Open the file containing density matrix coefficients
   FILE *in_file;
   in_file = fopen(DENSITY_FILE, "r");
-  if (iv == -1) {potential_spline_init(h_AA_T_q, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -2) {potential_spline_init(h_AA_T_q_sd, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -3) {potential_spline_init(h_AP_T_q, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -4) {potential_spline_init(h_AP_T_q_sd, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);}
-  if (iv == -5) {potential_spline_init(h_PP_T_q, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);}
-  if (iv == -6) {potential_spline_init(h_PP_T_q_sd, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -7) {potential_spline_init(h_MM_T_q, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -8) {potential_spline_init(h_MM_T_q_sd, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
   double mat = 0.0;
   int i;
   for (i = 0; i < NUM_SHELLS; i++) {
@@ -96,8 +88,6 @@ double compute_matrix_element_tau_plus(int iv) {
   double mat = 0.0;
   FILE *in_file;
   in_file = fopen(DENSITY_FILE, "r");
-  if (iv == -1) {potential_spline_init(h_F_q, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -2) {potential_spline_init(h_F_q_sd, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
 
   for (int i = 0; i < NUM_SHELLS; i++) {
     int in1, in2, ij1, ij2, ij12, it12;
@@ -171,14 +161,6 @@ double compute_matrix_element_sigma_tau_plus(int iv) {
   FILE *in_file;
   in_file = fopen(DENSITY_FILE, "r");
   double mat = 0.0;
-  if (iv == -1) {potential_spline_init(h_AA_GT_q, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -2) {potential_spline_init(h_AA_GT_q_sd, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -3) {potential_spline_init(h_AP_GT_q, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -4) {potential_spline_init(h_AP_GT_q_sd, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);}
-  if (iv == -5) {potential_spline_init(h_PP_GT_q, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);}
-  if (iv == -6) {potential_spline_init(h_PP_GT_q_sd, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -7) {potential_spline_init(h_MM_GT_q, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
-  if (iv == -8) {potential_spline_init(h_MM_GT_q_sd, R_SPL_MIN, R_SPL_MAX, R_SPL_STEPS);} 
  
   for (int i = 0; i < NUM_SHELLS; i++) {
     int in1, in2, ij1, ij2, ij12, it12;

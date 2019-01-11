@@ -51,7 +51,6 @@ double talmi_integrand(double q, double p, int iv) {
     double beta = exp(-1.1*pow(B_OSC*q, 2))*(1.0 - 0.68*pow(B_OSC*q,2.0));
     v *= pow(1.0 - beta, 2.0);
   }
-  if (iv < 0) {v *= v_spline(q);}
   if (iv == 1) {
     v *= v_light_limit(q);
   } else if (iv == 2) {
@@ -61,33 +60,19 @@ double talmi_integrand(double q, double p, int iv) {
   } else if (iv == 4) {
     v *= v_light_limit_d(q);
   } else if (iv == 5) {
-    v *= v_av18_c(q);
   } else if (iv == 6) {
-    v *= v_av18_tau(q);
   } else if (iv == 7) {
-    v *= v_av18_sigma(q);
   } else if (iv == 8) {
-    v *= v_av18_sigma_tau(q);
   } else if (iv == 9) {
-    v *= v_av18_t(q);
   } else if (iv == 10) {
-    v *= v_av18_t_tau(q);
   } else if (iv == 11) {
-    v *= v_av18_ls(q);
   } else if (iv == 12) {
-    v *= v_av18_ls_tau(q);
   } else if (iv == 13) {
-    v *= v_av18_l2(q);
   } else if (iv == 14) {
-    v *= v_av18_l2_tau(q);
   } else if (iv == 15) {
-    v *= v_av18_l2_sigma(q);
   } else if (iv == 16) {
-    v *= v_av18_l2_sigma_tau(q);
   } else if (iv == 17) {
-    v *= v_av18_ls2(q);
   } else if (iv == 18) {
-    v *= v_av18_ls2_tau(q);
   }
   return v;
 }
@@ -167,143 +152,104 @@ double v_pion_NN_g2(double r) {
   return v;
 }
 
-double g_vector(double q_sq) {
-  double g = pow(1.0 + q_sq/pow(LAMBDA_V, 2.0), -2.0);
+double h_AA_GT_sd(double r) {
+  r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_A*0.0050677;
+  double b = r*PION_MASS*0.0050677;
+  double v = r_a*pow(a, 3)/(48*r*pow(b, 2))*exp(-a)*(3 + a*(3 + a));
 
-  return g;
+  return v;
 }
 
-double g_axial(double q_sq) {
-  double g = pow(G_AXIAL, 2.0)*pow(1.0 + q_sq/pow(LAMBDA_A, 2.0), -2.0);
+double h_AA_T_sd(double r) {
+  r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_A*0.0050677;
+  double b = r*PION_MASS*0.0050677;
+  double v = r_a/(48*r*pow(b, 2))*(144 + exp(-a)*(-a*(12 + a*a)*(12 + a*(6 + a)) - 144));
 
-  return g;
+  return v;
 }
 
-double g_magnetic(double q_sq) {
-  double g = (1.0 + KAPPA_1)*g_vector(q_sq);
- 
-  return g;
+double h_AP_GT_sd(double r) {
+  r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_A*0.0050677;
+  double b = r*PION_MASS*0.0050677;
+  double v = -4.0*r_a*pow(a, 5)/(3*96*r*pow(b, 2)*pow(a*a-b*b, 4))*(-48*pow(a, 3)*pow(b, 2)*exp(-b) + exp(-a)*(pow(a, 6)*(3 + a*(3 + a)) - 3*pow(a, 3)*(-16 + a*(-7 + a + a*a))*b*b + 3*a*a*(-9 + (-1 + a)*a)*pow(b, 4) + (3 - (a-3)*a)*pow(b, 6)));
+
+  return v;
 }
 
-double g_pseudo(double q_sq) {
-  double g = -2.0*M_NEUTRON*g_axial(q_sq)/(q_sq + pow(PION_MASS, 2.0));
+double h_AP_T_sd(double r) {
+  r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_A*0.0050677;
+  double b = r*PION_MASS*0.0050677;
+  double v = 4.0*r_a*pow(a, 7)/(3*96*r*pow(b, 2)*pow(a*a-b*b, 4))*(exp(-a)*(-6*pow(a, 5) - pow(a, 6) + pow(b, 6) + 3*pow(a, 4)*(b*b-8) + 12*pow(a, 3)*(b*b-6) -3*a*a*(48-8*b*b+pow(b, 4)) -6*a*(24-4*b*b+pow(b, 4))) + exp(-b)*6*a*(8*(3 + 3*b + b*b)));
 
-  return g;
-}
-
-double h_AA_GT_q(double q, double r) {
-  double h = pow(g_axial(q*q), 2.0)/pow(G_AXIAL, 2.0)*gsl_sf_bessel_j0(q*r*0.00507);
-
-  return h;
-}
-
-double h_AA_T_q(double q, double r) {
-  double h = pow(g_axial(q*q), 2.0)/pow(G_AXIAL, 2.0)*gsl_sf_bessel_j2(q*r*0.00507);
-
-  return h;
-}
-
-double h_AP_GT_q(double q, double r) {
-  double h = g_pseudo(q*q)/(3*M_NEUTRON*pow(G_AXIAL, 2.0))*g_axial(q*q)*q*q*gsl_sf_bessel_j0(q*r*0.00507);
-
-  return h;
-}
-
-double h_AP_T_q(double q, double r) {
-  double h = -g_pseudo(q*q)/(3*M_NEUTRON*pow(G_AXIAL, 2.0))*g_axial(q*q)*q*q*gsl_sf_bessel_j2(q*r*0.00507);
-
-  return h;
+  return v;
 }
  
-double h_PP_GT_q(double q, double r) {
-  double h = pow(g_pseudo(q*q), 2.0)*pow(q, 4.0)/(pow(G_AXIAL*M_NEUTRON, 2.0)*12)*gsl_sf_bessel_j0(q*r*0.00507);
-
-  return h;
+double h_PP_GT_sd(double r) {
+   r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_A*0.0050677;
+  double b = r*PION_MASS*0.0050677;
+  double v = 2.0*r_a*pow(a, 7)/(3*96*r*pow(b, 2)*pow(a*a-b*b, 5))*(exp(-b)*24*a*b*b*(a*a*(b-4) -b*b*(b+4)) + exp(-a)*(pow(a, 6)*(3 + a*(3 + a)) + 3*a*a*a*(32 + a*(17 + a - a*a))*b*b + 3*a*(32 + a*(-13 + (a-5)*a))*pow(b, 4) - (15 + (a-9)*a)*pow(b, 6)));
+  
+ return v;
 }
 
-double h_PP_T_q(double q, double r) {
-  double h = -pow(g_pseudo(q*q), 2.0)*pow(q, 4.0)/(pow(G_AXIAL*M_NEUTRON, 2.0)*12)*gsl_sf_bessel_j2(q*r*0.00507);
+double h_PP_T_sd(double r) {
+  r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_A*0.0050677;
+  double b = r*PION_MASS*0.0050677;
+  double v = -2.0*r_a*pow(a, 8)/(3*96*r*pow(b, 2)*pow(a*a-b*b, 5))*(exp(-a)*(-6*pow(a, 6)-pow(a, 7) + 6*pow(a, 4)*(b*b-12) + 3*pow(a, 5)*(b*b-8) - 3*pow(a, 3)*(48 + 8*b*b + pow(b, 4)) + a*b*b*(-432 + 48*b*b + pow(b, 4))) - 6*a*a*(4*(-6-6*b-b*b+pow(b, 3))*exp(-b) + (24 + 28*b*b - pow(b, 4))*exp(-a))+6*b*b*(4*(18 + 18*b + 7*b*b + pow(b, 3))*exp(-b) -(72 - 8*b*b + pow(b, 4))*exp(-a)));
 
-  return h;
+  return v;
 }
 
-double h_MM_GT_q(double q, double r) {
-  double h = pow(g_magnetic(q*q), 2.0)*pow(q, 2.0)/(pow(G_AXIAL*M_NEUTRON, 2.0)*6)*gsl_sf_bessel_j0(q*r*0.00507);
+double h_MM_GT_sd(double r) {
+  r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_V*0.0050677;
+  double b = r*PION_MASS*0.0050677;
+  double c = r*M_NEUTRON*0.0050677;
+  double v = -pow(1 + KAPPA_1, 2)*r_a/(3*96*b*b*c*c*r*pow(G_AXIAL, 2))*pow(a, 5)*exp(-a)*(-3 + a*(a-3));
 
-  return h;
+  return v;
 }
 
-double h_MM_T_q(double q, double r) {
-  double h = pow(g_magnetic(q*q), 2.0)*pow(q, 2.0)/(pow(G_AXIAL*M_NEUTRON, 2.0)*12)*gsl_sf_bessel_j2(q*r*0.00507);
+double h_MM_T_sd(double r) {
+  r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_V*0.0050677;
+  double b = r*PION_MASS*0.0050677;
+  double c = r*M_NEUTRON*0.0050677;
+  double v = 0.5*pow(1 + KAPPA_1, 2)*r_a/(3*96*b*b*c*c*r*pow(G_AXIAL, 2))*pow(a, 7)*exp(-a);  
 
-  return h;
+  return v;
 }
 
-double h_F_q(double q, double r) {
-  double h = g_vector(q*q)*gsl_sf_bessel_j0(q*r*0.00507);
-
-  return h;
-}
-
-double h_AA_GT_q_sd(double q, double r) {
-  double h = pow(g_axial(q*q), 2.0)/pow(G_AXIAL, 2.0)*gsl_sf_bessel_j0(q*r*0.00507)*pow(q/PION_MASS, 2.0);
-
-  return h;
-}
-
-double h_AA_T_q_sd(double q, double r) {
-  double h = pow(g_axial(q*q), 2.0)/pow(G_AXIAL, 2.0)*gsl_sf_bessel_j2(q*r*0.00507)*pow(q/PION_MASS, 2.0);
-
-  return h;
-}
-
-double h_AP_GT_q_sd(double q, double r) {
-  double h = g_pseudo(q*q)/(3*M_NEUTRON*pow(G_AXIAL, 2.0))*g_axial(q*q)*q*q*gsl_sf_bessel_j0(q*r*0.00507)*pow(q/PION_MASS, 2.0);
-
-  return h;
-}
-
-double h_AP_T_q_sd(double q, double r) {
-  double h = -g_pseudo(q*q)/(3*M_NEUTRON*pow(G_AXIAL, 2.0))*g_axial(q*q)*q*q*gsl_sf_bessel_j2(q*r*0.00507)*pow(q/PION_MASS, 2.0);
-
-  return h;
-}
- 
-double h_PP_GT_q_sd(double q, double r) {
-  double h = pow(g_pseudo(q*q), 2.0)*pow(q, 4.0)/(pow(G_AXIAL*M_NEUTRON, 2.0)*12)*gsl_sf_bessel_j0(q*r*0.00507)*pow(q/PION_MASS, 2.0);
-
-  return h;
-}
-
-double h_PP_T_q_sd(double q, double r) {
-  double h = -pow(g_pseudo(q*q), 2.0)*pow(q, 4.0)/(pow(G_AXIAL*M_NEUTRON, 2.0)*12)*gsl_sf_bessel_j2(q*r*0.00507)*pow(q/PION_MASS, 2.0);
-
-  return h;
-}
-
-double h_MM_GT_q_sd(double q, double r) {
-  double h = pow(g_magnetic(q*q), 2.0)*pow(q, 2.0)/(pow(G_AXIAL*M_NEUTRON, 2.0)*6)*gsl_sf_bessel_j0(q*r*0.00507)*pow(q/PION_MASS, 2.0);
-
-  return h;
-}
-
-double h_MM_T_q_sd(double q, double r) {
-  double h = pow(g_magnetic(q*q), 2.0)*pow(q, 2.0)/(pow(G_AXIAL*M_NEUTRON, 2.0)*12)*gsl_sf_bessel_j2(q*r*0.00507)*pow(q/PION_MASS, 2.0);
-
-  return h;
-}
-
-double h_F_q_sd(double q, double r) {
-  double h = g_vector(q*q)*gsl_sf_bessel_j0(q*r*0.00507)*pow(q/PION_MASS, 2.0);
-
-  return h;
+double h_F_sd(double r) {
+  r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_V*0.0050677;
+  double b = r*PION_MASS*0.0050677;
+  double v = 2.0*r_a/(96*r*b*b)*pow(a, 3)*exp(-a)*(3 + a*(3+a));
+  
+  return v;
 }
 
 
 double h_AA_GT(double r) {
   r *= B_OSC;
   double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
-  double v = r_a/r*pow(G_AXIAL, 2.0);
+  double x = r*LAMBDA_A*0.0050677;
+  double v = r_a/r*(1.0 - exp(-x)*(1.0 + 11.0/16.0*x + 3.0/16.0*x*x + 1.0/48.0*x*x*x));
 
   return v;
 }
@@ -311,7 +257,8 @@ double h_AA_GT(double r) {
 double h_AA_T(double r) {
   r *= B_OSC;
   double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
-  double v = r_a/(2*r)*pow(G_AXIAL, 2.0);
+  double x = r*LAMBDA_A*0.0050677;
+  double v = r_a/r*(0.5 - 12.0/(x*x) + exp(-x)*(12.0/(x*x) + 12.0/x + 11.0/2.0 + 1.5*x + 0.25*x*x + 1.0/48.0*x*x*x));
  
   return v;
 }
@@ -319,8 +266,10 @@ double h_AA_T(double r) {
 double h_AP_GT(double r) {
   r *= B_OSC;
   double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
-  double x = r*PION_MASS*0.0050677;
-  double v = -2*r_a/(3*r)*pow(G_AXIAL, 2.0)*exp(-x);
+  double y = r*PION_MASS*0.0050677;
+  double x = r*LAMBDA_A*0.0050677;
+  double v = 4.0*r_a*pow(x, 3)/(3.0*96*r*pow(x-y, 4)*pow(x+y, 4));
+  v *= (exp(-y)*(-48*pow(x, 5)) + exp(-x)*(48*pow(x, 5) + 33*pow(x, 6) + 9*pow(x, 7) + pow(x, 8) - 45*pow(x, 4)*y*y - 21*pow(x, 5)*y*y - 3*pow(x, 6)*y*y + 15*x*y*pow(y, 4) + 15*x*x*x*pow(y, 4) + 3*pow(x*y, 4) - 3*pow(y, 6) - 3*x*pow(y, 6) - x*x*pow(y, 6)));
 
   return v;
 }
@@ -328,9 +277,9 @@ double h_AP_GT(double r) {
 double h_AP_T(double r) {
   r *= B_OSC;
   double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
-  double x = r*PION_MASS*0.0050677;
-  double v = r_a/(r*x*x)*pow(G_AXIAL, 2.0)*(2.0/3.0)*exp(-x);
-  v *= (-3.0 + 3*exp(x) - 3*x - x*x);
+  double b = r*PION_MASS*0.0050677;
+  double a = r*LAMBDA_A*0.0050677;
+  double v = r_a/(r*72*b*b*pow(a*a-b*b, 4))*(exp(-b)*(-48*pow(a, 8)*(3 + b*(3+b))) + exp(-a)*(pow(a, 6)*(12 + a*(6 + a))*(48 + a*(24 + a*(6 + a)))*b*b - 3*pow(a, 4)*(12 + a*(6 + a))*(24 + a*(12 + a*(4 + a)))*pow(b, 4) + 3*a*a*(192 + a*(192 + a*(96 + a*(32 + a*(8 + a)))))*pow(b, 6) - (144 + a*(12 + a*a)*(12 + a*(6 + a)))*pow(b, 8)) + 144*pow(a*a-b*b, 4));
 
   return v;
 }
@@ -338,9 +287,10 @@ double h_AP_T(double r) {
 double h_PP_GT(double r) {
   r *= B_OSC;
   double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
-  double x = r*PION_MASS*0.0050677;
-  double v = -r_a/(6*r)*pow(G_AXIAL, 2.0)*exp(-x);
-  v *= (x-2);
+  double y = r*PION_MASS*0.0050677;
+  double x = r*LAMBDA_A*0.0050677;
+  double v = r_a/r*pow(x, 5)/144.0/pow(x*x - y*y, 5);
+  v *= (exp(-y)*(-24*x*x*x*(-2*x*x + x*x*y - 6*y*y - y*y*y)) - exp(-x)*(48*pow(x, 5) + 33*pow(x, 6) + 9*pow(x, 7) + pow(x, 8) + y*y*(144*pow(x, 3) + 9*pow(x, 4) - 15*pow(x, 5) - 3*pow(x, 6)) - 45*pow(y, 4)*x*x + 3*pow(x*y, 4) + 3*pow(y, 6) + 3*x*pow(y, 6) - x*x*pow(y, 6)));
 
   return v;
 }
@@ -348,45 +298,38 @@ double h_PP_GT(double r) {
 double h_PP_T(double r) {
   r *= B_OSC;
   double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
-  double x = r*PION_MASS*0.0050677;
-  double v = -r_a/(6*r)*pow(G_AXIAL, 2.0)*exp(-x);
-  v *= (1+x);
+  double b = r*PION_MASS*0.0050677;
+  double a = r*LAMBDA_A*0.0050677;
+  double v = -2.0*r_a*pow(a, 7)/(3.0*r*96*pow(a-b, 5)*pow(a+b, 5));
+  v *= (exp(-b)*(-576*a+24*pow(a, 3)-576*a*b + 24*pow(a,3)*b - 216*a*b*b - 24*a*pow(b, 3)) + exp(-a)*(576*a + 576*a*a + 264*a*a*a + 72*pow(a, 4) + 12*pow(a, 5) + pow(a, 6) - 72*a*b*b - 72*a*a*b*b - 24*pow(a, 3)*b*b - 3*pow(a, 4)*b*b + 12*a*pow(b, 4) + 3*a*a*pow(b, 4) - pow(b, 6)));
 
   return v;
 }
 
+double h_MM_GT(double r) {
+  r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_V*0.0050677;
+  double b = r*M_NEUTRON*0.0050667;
+  double v = pow(1 + KAPPA_1, 2.0)*r_a/(288*pow(G_AXIAL, 2)*b*b*r)*pow(a, 3)*exp(-a)*(3 + a*(3+a));
+ 
+  return v;
+}
+
+double h_MM_T(double r) {
+  r *= B_OSC;
+  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
+  double a = r*LAMBDA_V*0.0050677;
+  double b = r*M_NEUTRON*0.0050677;
+  double v = pow(1 + KAPPA_1, 2.0)*r_a/(288*2*pow(G_AXIAL, 2)*b*b*r)*(144 + exp(-a)*(-a*(12 + a*a)*(12 + a*(6 + a)) - 144));
+
+  return v;
+}
 double h_F(double r) {
   r *= B_OSC;
   double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
-  double v = r_a/r*pow(G_AXIAL, 2.0);
+  double a = r*LAMBDA_V*0.0050677;
+  double v = r_a/(48*r)*(48 + exp(-a)*(-48 - a*(33 + a*(9+a))));
 
   return v;
 }
-
-gsl_interp_accel *potential_acc;
-gsl_spline *potential_spline;
-
-void potential_spline_init(double (*f)(double, double), double r_min, double r_max, int r_steps) {
-  potential_acc = gsl_interp_accel_alloc();
-  potential_spline = gsl_spline_alloc(gsl_interp_cspline, r_steps);
-  printf("Initializing spline\n");
-  double* r_arr = (double*)malloc(sizeof(double)*r_steps);
-  double* v_arr = (double*)malloc(sizeof(double)*r_steps);
-  double dr = (r_max - r_min)/r_steps; 
-  double r_a = R_NUC*pow(A_NUC, 1.0/3.0);
-
-  for (int i = 0; i < r_steps; i++) {
-    double r = r_min + i*dr;
-    r_arr[i] = r;
-    v_arr[i] = 0.00507*2.0*r_a/M_PI*Romberg2Vars(f, 0.001, 10000.0, r, pow(10, -4));
-  }
-  gsl_spline_init(potential_spline, r_arr, v_arr, r_steps);
-  
-  return;
-}
-   
-double v_spline(double r) {
-  r *= B_OSC;
-  double v = gsl_spline_eval(potential_spline, r, potential_acc);
-  return v;
-} 
