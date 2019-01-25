@@ -36,6 +36,7 @@ double compute_matrix_element_TT(int iv) {
     if (j2 == 4.5) {l2 = 4;}
     else if (j2 == 2.5) {l2 = 3;}
     else {l2 = 1;}
+
     if (j1p == 4.5) {l1p = 4;}
     else if (j1p == 2.5) {l1p = 3;}
     else {l1p = 1;}

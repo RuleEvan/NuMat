@@ -60,20 +60,43 @@ double talmi_integrand(double q, double p, int iv) {
   } else if (iv == 4) {
     v *= v_light_limit_d(q);
   } else if (iv == 5) {
+    v *= h_F(q);
   } else if (iv == 6) {
+    v *= h_AA_GT(q);
   } else if (iv == 7) {
+    v *= h_AA_T(q);
   } else if (iv == 8) {
+    v *= h_AP_GT(q);
   } else if (iv == 9) {
+    v *= h_AP_T(q);
   } else if (iv == 10) {
+    v *= h_PP_GT(q);
   } else if (iv == 11) {
+    v *= h_PP_T(q);
   } else if (iv == 12) {
+    v *= h_MM_GT(q);
   } else if (iv == 13) {
+    v *= h_MM_T(q);
   } else if (iv == 14) {
+    v *= h_F_sd(q);
   } else if (iv == 15) {
+    v *= h_AA_GT_sd(q);
   } else if (iv == 16) {
+    v *= h_AA_T_sd(q);
   } else if (iv == 17) {
+    v *= h_AP_GT_sd(q);
   } else if (iv == 18) {
+    v *= h_AP_T_sd(q);
+  } else if (iv == 19) {
+    v *= h_PP_GT_sd(q);
+  } else if (iv == 20) {
+    v *= h_PP_T_sd(q);
+  } else if (iv == 21) {
+    v *= h_MM_GT_sd(q);
+  } else if (iv == 22) {
+    v *= h_MM_T_sd(q);
   }
+
   return v;
 }
 
