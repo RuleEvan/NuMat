@@ -23,9 +23,9 @@ double b_coeff(double n, double l, double np, double lp, double p) {
 
 double compute_potential(double n, double np, double l, double lp, int iv) {
   // Sum the required Talmi integrals with the corresponding B coefficients
-  int p;
-  double v;
-  for (p = (int)((l + lp)/2); p <= (int)((l + lp)/2 + n + np); p++) {
+  double v = 0;
+  for (int ip = l + lp; ip <= l + lp + 2*n + 2*np; ip+=2) {
+    double p = ip/2.0;
     v += b_coeff(n, l, np, lp, p)*talmi(p, iv);
   }
   return v;

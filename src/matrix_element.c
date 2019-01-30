@@ -68,7 +68,7 @@ double compute_matrix_element_TT(int iv) {
         fact *= nine_j(l1p, l2p, lambdap, 0.5, 0.5, 1, j1p, j2p, j12p);
         if (fact == 0.0) {continue;}
         fact *= sqrt(2*lambda + 1)*sqrt(2*lambdap + 1);
-        fact *= pow(-1.0, j12 + lambda + 1)*sqrt(15)*sqrt(32*M_PI/5)*3.0;
+        fact *= pow(-1.0, j12 + 1)*sqrt(15)*sqrt(32*M_PI/5)*3.0;
         fact *= six_j(j12, 1, lambdap, 2, lambda, 1);
         fact *= sqrt(5)*sqrt(2*j12 + 1);
         fact *= compute_radial_matrix_element_y2(iv, n1p, l1p, n2p, l2p, lambdap, n1, l1, n2, l2, lambda, 1, t12);
