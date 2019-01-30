@@ -2,8 +2,13 @@
 
 int main(int argc, char *argv[]) {
   printf("%g\n", compute_matrix_element_M_F());
-//  printf("M_F: %g\n", compute_matrix_element_tau_plus(5));
-//  printf("M_AA_GT: %g\n", compute_matrix_element_sigma_tau_plus(6));
+  printf("MGT: %g\n", compute_matrix_element_M_GT());
+  printf("M1: %g\n", compute_matrix_element_tau_plus(1));
+  printf("M2: %g\n", compute_matrix_element_sigma_tau_plus(1));
+  printf("M1': %g\n", compute_matrix_element_tau_plus(4));
+  printf("M2': %g\n", compute_matrix_element_sigma_tau_plus(4));
+  printf("M3': %g\n", (compute_matrix_element_sigma_tau_plus(4) + compute_matrix_element_TT(4))/3.0);
+//  printf("M_AA_GT: %g\n", compute_matrix_element_sigma_tau_plus(1));
 //  printf("M_AP_GT: %g\n", compute_matrix_element_sigma_tau_plus(8));
 //  printf("M_PP_GT: %g\n", compute_matrix_element_sigma_tau_plus(10));
 //  printf("M_MM_GT: %g\n", compute_matrix_element_sigma_tau_plus(12));

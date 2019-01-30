@@ -152,7 +152,6 @@ double Romberg3Vars(double (*f)(double, double, int), double a, double b, double
     
     return romb;
   }
-  
   return romb;
 }
 

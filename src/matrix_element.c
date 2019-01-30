@@ -58,7 +58,7 @@ double compute_matrix_element_TT(int iv) {
     int lambdap_min = MAX(abs(l1p - l2p), abs(j12p - 1));
     int lambdap_max = MIN(l1p + l2p, j12p + 1);
     for (lambda = lambda_min; lambda <= lambda_max; lambda++) {
-      lambdap_min = MAX(lambdap_min, abs(lambda - 2));
+      lambdap_min = MAX(lambdap_min, lambda - 2);
       lambdap_max = MIN(lambdap_max, lambda + 2);
       if (lambdap_min > lambdap_max) {continue;}
       for (lambdap = lambdap_min; lambdap <= lambdap_max; lambdap++) {
@@ -97,7 +97,6 @@ double compute_matrix_element_tau_plus(int iv) {
     // Each line of the file corresponds to a nuclear shell
     float density;
     fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density);
-
     // The angular momentum are doubled in the file
     double j1 = ij1/2.0;
     double j2 = ij2/2.0;
@@ -126,14 +125,15 @@ double compute_matrix_element_tau_plus(int iv) {
 
     
     // The N's listed in the input file are energy quanta, we want radial quantum numbers
-    double n1 = (in1)/2.0;
-    double n2 = (in2)/2.0;
-    double n1p = (in1p)/2.0;
-    double n2p = (in2p)/2.0;
- 
+    double n1 = (in1 - l1)/2.0;
+    double n2 = (in2 - l2)/2.0;
+    double n1p = (in1p - l1p)/2.0;
+    double n2p = (in2p - l2p)/2.0;
     double m4 = 0.0;
     // Convert from JJ to LS coupling (L is lambda)
-    for (lambda = abs(l1 - l2); lambda <= (l1 + l2); lambda++) {
+    int lambda_min = MAX(abs(l1 - l2), abs(l1p - l2p));
+    int lambda_max = MIN(l1 + l2, l1p + l2p);
+    for (lambda = lambda_min; lambda <= lambda_max; lambda++) {
       int s_max = MIN(lambda + j12, 1);
       int s_min = abs(lambda - j12);
       for (s = s_min; s <= s_max; s++) {
@@ -145,12 +145,14 @@ double compute_matrix_element_tau_plus(int iv) {
         fact *= sqrt(2*j12 + 1.0);
         double m1 = sqrt(5.0);
         m1 *= fact;
-        if ((in1 == in2) && (j1 == j2)) {fact *= 1/sqrt(2);}
-        if ((in1p == in2p) && (j1p == j2p)) {fact *= 1/sqrt(2);}  
-        m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, lambda, n1, l1, n2, l2, lambda, s, t12);
+        if ((n1 == n2) && (j1 == j2) && (l1 == l2)) {m1 *= 1/sqrt(2);}
+        if ((n1p == n2p) && (j1p == j2p) && (l1p == l2p)) {m1 *= 1/sqrt(2);}  
+
+        m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, n1, l1, n2, l2, lambda, s, t12);
         m4 += m1;
       }
     }
+    
     mat += density*m4;
   }
                         
@@ -198,10 +200,10 @@ double compute_matrix_element_sigma_tau_plus(int iv) {
     else {l2p = 1;}
     
     // The N's listed in the input file are energy quanta, we want radial quantum numbers
-    double n1 = in1/2.0;
-    double n2 = in2/2.0;
-    double n1p = in1p/2.0;
-    double n2p = in2p/2.0;
+    double n1 = (in1 - l1)/2.0;
+    double n2 = (in2 - l2)/2.0;
+    double n1p = (in1p - l1p)/2.0;
+    double n2p = (in2p - l2p)/2.0;
  
     double m4 = 0.0;
     // Convert from JJ to LS coupling (L is lambda)
@@ -218,12 +220,13 @@ double compute_matrix_element_sigma_tau_plus(int iv) {
         double m1 = pow(-1.0, 1.0 + s)*six_j(s,0.5,0.5,1.0,0.5,0.5)*6.0;
         m1 *= sqrt(5);
         m1 *= fact;
-        if ((n1 == n2) && (j1 == j2) && (l1 == l2)) {m1 *= 1/sqrt(2);}
-        if ((n1p == n2p) && (j1p == j2p) && (l1p == l2p)) {m1 *= 1/sqrt(2);}
-        m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, lambda, n1, l1, n2, l2, lambda, s, t12);
+        m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, n1, l1, n2, l2, lambda, s, t12);
         m4 += m1;
       }
     }
+    if ((n1 == n2) && (j1 == j2) && (l1 == l2)) {m4 *= 1/sqrt(2);}
+    if ((n1p == n2p) && (j1p == j2p) && (l1p == l2p)) {m4 *= 1/sqrt(2);}
+
     mat += m4*density;
   }
                         
@@ -244,7 +247,7 @@ double compute_matrix_element_M_GT() {
   
   double mat = 0.0;
   int i;
-  for (i = 0; i < NUM_SHELLS; i++) {
+  for (i = 0; i < 99; i++) {
     // Each line of the file corresponds to a nuclear shell
     float density;
     fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density);
@@ -261,10 +264,6 @@ double compute_matrix_element_M_GT() {
     if (j12 != j12p) {continue;} 
     int lambda, s;
     int l1, l2, l1p, l2p;
-    l1 = j1 + 0.5;
-    l2 = j2 + 0.5;
-    l1p = j1p + 0.5;
-    l2p = j2p + 0.5;
   
     if (j1 == 4.5) {l1 = 4;}
     else if (j1 == 2.5) {l1 = 3;}
@@ -280,11 +279,10 @@ double compute_matrix_element_M_GT() {
     else {l2p = 1;}
 //    if ((j2 > j1) || (j2p > j1p)) {continue;}
     // The N's listed in the input file are energy quanta, we want radial quantum numbers
-    double n1 = (in1)/2.0;
-    double n2 = (in2)/2.0;
-    double n1p = (in1p)/2.0;
-    double n2p = (in2p)/2.0;
-   
+    double n1 = (in1 - l1)/2.0;
+    double n2 = (in2 - l2)/2.0;
+    double n1p = (in1p - l1p)/2.0;
+    double n2p = (in2p - l2p)/2.0;
     double m4 = 0.0;
     // Convert from JJ to LS coupling (L is lambda)
     for (lambda = abs(l1 - l2); lambda <= (l1 + l2); lambda++) {
@@ -304,11 +302,12 @@ double compute_matrix_element_M_GT() {
         if ((n1 == n1p) && (l1 == l1p) && (n2 == n2p) && (l2 == l2p)) {anti_symm = 1.0;}
         if ((n1 == n2p) && (l1 == l2p) && (n2 == n1p) && (l2 == l1p)) {anti_symm += pow(-1.0, t12 + l1 + l2 + lambda + s + 1);}
         m1 *= anti_symm;
-        if ((n1 == n2) && (j1 == j2) && (l1 == l2)) {m1 *= 1/sqrt(2.0);}
-        if ((n1p == n2p) && (j1p == j2p) && (l1p == l2p)) {m1 *= 1/sqrt(2.0);}
         m4 += m1;
       }
     }
+    if ((n1 == n2) && (j1 == j2) && (l1 == l2)) {m4 *= 1/sqrt(2.0);}
+    if ((n1p == n2p) && (j1p == j2p) && (l1p == l2p)) {m4 *= 1/sqrt(2.0);}
+
     mat += m4*density;
   }
   fclose(in_file);     
