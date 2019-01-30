@@ -46,10 +46,10 @@ double compute_matrix_element_TT(int iv) {
    
     
     // The N's listed in the input file are energy quanta, we want radial quantum numbers
-    double n1 = (in1)/2.0;
-    double n2 = (in2)/2.0;
-    double n1p = (in1p)/2.0;
-    double n2p = (in2p)/2.0;
+    double n1 = (in1 - l1)/2.0;
+    double n2 = (in2 - l2)/2.0;
+    double n1p = (in1p - l1p)/2.0;
+    double n2p = (in2p - l2p)/2.0;
  
     double m4 = 0.0;
     // Convert from JJ to LS coupling (L is lambda)
@@ -68,7 +68,7 @@ double compute_matrix_element_TT(int iv) {
         fact *= nine_j(l1p, l2p, lambdap, 0.5, 0.5, 1, j1p, j2p, j12p);
         if (fact == 0.0) {continue;}
         fact *= sqrt(2*lambda + 1)*sqrt(2*lambdap + 1);
-        fact *= pow(-1.0, j12 + lambda + 1)*sqrt(15)*sqrt(32*M_PI/5)*3.0;
+        fact *= pow(-1.0, j12 + 1)*sqrt(15)*sqrt(32*M_PI/5)*3.0;
         fact *= six_j(j12, 1, lambdap, 2, lambda, 1);
         fact *= sqrt(5)*sqrt(2*j12 + 1);
         if ((in1 == in2) && (j1 == j2)) {fact *= 1/sqrt(2);}

@@ -23,9 +23,9 @@ double b_coeff(double n, double l, double np, double lp, double p) {
 
 double compute_potential(double n, double np, double l, double lp, int iv) {
   // Sum the required Talmi integrals with the corresponding B coefficients
-  int p;
-  double v;
-  for (p = (int)((l + lp)/2); p <= (int)((l + lp)/2 + n + np); p++) {
+  double v = 0;
+  for (int ip = l + lp; ip <= l + lp + 2*n + 2*np; ip += 2) {
+    double p = ip/2.0;
     v += b_coeff(n, l, np, lp, p)*talmi(p, iv);
   }
   return v;
@@ -35,7 +35,7 @@ double talmi(double p, int iv) {
   // Compute the order p Talmi integral
   // Set the limits of the integral and the error tolerance
   double r_min = 0.001;
-  double r_max = 5.0;
+  double r_max = 10.0;
   double tol = pow(10, -6);
   double I_p = Romberg3Vars(&talmi_integrand, r_min, r_max, p, iv, tol);
   I_p *= 2.0/gsl_sf_gamma(p + 1.5);
@@ -47,10 +47,12 @@ double talmi_integrand(double q, double p, int iv) {
   // The integrand of the Talmi integral
   // Plug in the required potential here
   double v = pow(q, 2.0*p + 2.0)*exp(-q*q);
+  if (iv == 0) {return v;}
   if (COR_FAC == 1) {
     double beta = exp(-1.1*pow(B_OSC*q, 2))*(1.0 - 0.68*pow(B_OSC*q,2.0));
     v *= pow(1.0 - beta, 2.0);
   }
+ 
   if (iv == 1) {
     v *= v_light_limit(q);
   } else if (iv == 2) {

@@ -108,8 +108,8 @@ double Romberg3Vars(double (*f)(double, double, int), double a, double b, double
   // Numerical integrator
   int maxiter = 20;
   int maxj = 5;
-  float h, g0, fourj, gmax, error, g1, romb;
-  float g[maxj + 1];
+  double h, g0, fourj, gmax, error, g1, romb;
+  double *g = (double*) malloc(sizeof(double)*(maxj + 1));
   int nint;
   int i, j, jmax, k;
   h = 0.5 * (b - a);
@@ -147,6 +147,7 @@ double Romberg3Vars(double (*f)(double, double, int), double a, double b, double
     g[jmax] = g0;
   }
   romb = g0;
+  free(g);
   if (i > maxiter && fabs(error) > tol) {
     printf("Rombint failed to converge; integral= %g, error= %g \n", romb, error);
     

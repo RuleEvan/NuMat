@@ -1,13 +1,14 @@
 #include "data_gen.h"
 
-int main(int argc, char *argv[]) {
-  printf("%g\n", compute_matrix_element_M_F());
-  printf("MGT: %g\n", compute_matrix_element_M_GT());
-  printf("M1: %g\n", compute_matrix_element_tau_plus(1));
-  printf("M2: %g\n", compute_matrix_element_sigma_tau_plus(1));
-  printf("M1': %g\n", compute_matrix_element_tau_plus(4));
-  printf("M2': %g\n", compute_matrix_element_sigma_tau_plus(4));
-  printf("M3': %g\n", (compute_matrix_element_sigma_tau_plus(4) + compute_matrix_element_TT(4))/3.0);
+int main(int argc, char *argv[]) {  
+//  printf("MF: %g\n", compute_matrix_element_M_F());
+//  printf("MGT: %g\n", compute_matrix_element_M_GT());
+//  printf("M1: %g\n", compute_matrix_element_tau_plus(0));
+//  printf("M2: %g\n", compute_matrix_element_sigma_tau_plus(1));
+//  printf("M1': %g\n", compute_matrix_element_tau_plus(4));
+//  printf("M2': %g\n", compute_matrix_element_sigma_tau_plus(4));
+  printf("MT': %g\n", compute_matrix_element_TT(4));
+//  printf("%g\n", compute_potential(0,0,1,1,0));
 //  printf("M_AA_GT: %g\n", compute_matrix_element_sigma_tau_plus(1));
 //  printf("M_AP_GT: %g\n", compute_matrix_element_sigma_tau_plus(8));
 //  printf("M_PP_GT: %g\n", compute_matrix_element_sigma_tau_plus(10));
