@@ -90,23 +90,26 @@ double nine_j(double j11, double j12, double j13, double j21, double j22, double
   // Computes the Wigner 9J-symbol from the necessary 6J-symbols
   double nine_j = 0.0;
    
-  int i_min = MAX(abs(j11 - j21), abs(j32 - j33)); 
+/*  int i_min = MAX(abs(j11 - j33), abs(j32 - j21)); 
   i_min = MAX(i_min, abs(j12 - j23));
   i_min = MAX(i_min, abs(j21 - j32));
-  i_min = MAX(i_min, abs(j11 - j12));
-  i_min = MAX(i_min, abs(j23 - j33));
+  i_min = MAX(i_min, abs(j11 - j33));
+  i_min = MAX(i_min, abs(j23 - j12));
 
-  int i_max = MIN(j11 + j21, j32 + j33);
+  int i_max = MIN(j11 + j33, j32 + j21);
   i_max = MIN(i_max, j12 + j23);
   i_max = MIN(i_max, j21 + j32);
-  i_max = MIN(i_max, j11 + j12);
-  i_max = MIN(i_max, j23 + j33);
+  i_max = MIN(i_max, j11 + j33);
+  i_max = MIN(i_max, j23 + j12);
   if (i_min > i_max) {return 0.0;} 
 
   for (int i = 2*i_min; i <= 2*i_max; i += 2) {
     double k = i/2.0;
     nine_j += pow(-1.0, i)*(i + 1.0)*six_j(j11, j21, j31, j32, j33, k)*six_j(j12, j22, j32, j21, k, j23)*six_j(j13, j23, j33, k, j11, j12);
-  } 
+  }
+*/
+  nine_j = gsl_sf_coupling_9j((int) 2*j11, (int) 2*j12, (int) 2*j13, (int) 2*j21, (int) 2*j22, (int) 2*j23, (int) 2*j31, (int) 2*j32, (int) 2*j33);
+//  printf("%g %g %g %g %g %g %g %g %g %g\n", j11, j12, j13, j21, j22, j23, j31, j32, j33, nine_j); 
   return nine_j;
 }
 

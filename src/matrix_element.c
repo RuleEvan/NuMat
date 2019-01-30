@@ -57,8 +57,8 @@ double compute_matrix_element_TT(int iv) {
     int lambda_max = MIN(l1 + l2, j12 + 1);
     int lambdap_min = MAX(abs(l1p - l2p), abs(j12p - 1));
     int lambdap_max = MIN(l1p + l2p, j12p + 1);
-    for (lambda = lambda_min; lambda <= lambda_max; lambda++) {
-      lambdap_min = MAX(lambdap_min, abs(lambda - 2));
+    for (lambda = abs(l1 - l2); lambda <= l1 + l2; lambda++) {
+      lambdap_min = MAX(lambdap_min, lambda - 2);
       lambdap_max = MIN(lambdap_max, lambda + 2);
       if (lambdap_min > lambdap_max) {continue;}
       for (lambdap = lambdap_min; lambdap <= lambdap_max; lambdap++) {
@@ -71,12 +71,13 @@ double compute_matrix_element_TT(int iv) {
         fact *= pow(-1.0, j12 + lambda + 1)*sqrt(15)*sqrt(32*M_PI/5)*3.0;
         fact *= six_j(j12, 1, lambdap, 2, lambda, 1);
         fact *= sqrt(5)*sqrt(2*j12 + 1);
-        if ((in1 == in2) && (j1 == j2)) {fact *= 1/sqrt(2);}
-        if ((in1p == in2p) && (j1p == j2p)) {fact *= 1/sqrt(2);}  
         fact *= compute_radial_matrix_element_y2(iv, n1p, l1p, n2p, l2p, lambdap, n1, l1, n2, l2, lambda, 1, t12);
         m4 += fact;
       }
     }
+    if ((in1 == in2) && (j1 == j2)) {m4 *= 1/sqrt(2);}
+    if ((in1p == in2p) && (j1p == j2p)) {m4 *= 1/sqrt(2);}  
+
     mat += m4*density;
   }
   fclose(in_file);         
@@ -261,10 +262,6 @@ double compute_matrix_element_M_GT() {
     if (j12 != j12p) {continue;} 
     int lambda, s;
     int l1, l2, l1p, l2p;
-    l1 = j1 + 0.5;
-    l2 = j2 + 0.5;
-    l1p = j1p + 0.5;
-    l2p = j2p + 0.5;
   
     if (j1 == 4.5) {l1 = 4;}
     else if (j1 == 2.5) {l1 = 3;}
@@ -303,6 +300,7 @@ double compute_matrix_element_M_GT() {
         double anti_symm = 0.0;
         if ((n1 == n1p) && (l1 == l1p) && (n2 == n2p) && (l2 == l2p)) {anti_symm = 1.0;}
         if ((n1 == n2p) && (l1 == l2p) && (n2 == n1p) && (l2 == l1p)) {anti_symm += pow(-1.0, t12 + l1 + l2 + lambda + s + 1);}
+        if (anti_symm == 0) {continue;}
         m1 *= anti_symm;
         if ((n1 == n2) && (j1 == j2) && (l1 == l2)) {m1 *= 1/sqrt(2.0);}
         if ((n1p == n2p) && (j1p == j2p) && (l1p == l2p)) {m1 *= 1/sqrt(2.0);}
@@ -312,7 +310,7 @@ double compute_matrix_element_M_GT() {
     mat += m4*density;
   }
   fclose(in_file);     
-                        
+  
   return mat;
 }
 

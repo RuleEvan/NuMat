@@ -203,7 +203,7 @@ double compute_radial_matrix_element_y2(int iv, int n1p, int l1p, int n2p, int l
           if (n_relp < 0) {continue;}
           double rm = brody_mosh(n_rel, l_rel, n_cm, l_cm, lambda, n1, l1, n2, l2);
           rm *= brody_mosh(n_relp, l_relp, n_cm, l_cm, lambdap, n1p, l1p, n2p, l2p);
-          rm *= sqrt(5/(4*M_PI))*sqrt(2*l_relp + 1)*sqrt(2*lambda + 1)*sqrt(2*lambdap + 1)*clebsch_gordan(l_relp, 2, l_rel, 0, 0, 0)*six_j(l_relp, l_rel, 2, lambda, lambdap, l_cm)*pow(-1.0, l_cm + l_relp + lambda);
+          rm *= sqrt(5/(4*M_PI))*sqrt(2*l_rel + 1)*sqrt(2*l_relp + 1)*sqrt(2*lambda + 1)*sqrt(2*lambdap + 1)*three_j(l_relp, 2, l_rel, 0, 0, 0)*six_j(l_relp, l_rel, 2, lambda, lambdap, l_cm)*pow(-1.0, l_cm + lambdap);
           if (rm == 0.0) {continue;}
           rm *= sym;
           rm *= compute_potential(n_rel, n_relp, l_rel, l_relp, iv);

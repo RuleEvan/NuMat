@@ -35,7 +35,7 @@ double talmi(double p, int iv) {
   // Compute the order p Talmi integral
   // Set the limits of the integral and the error tolerance
   double r_min = 0.001;
-  double r_max = 5.0;
+  double r_max = 10.0;
   double tol = pow(10, -6);
   double I_p = Romberg3Vars(&talmi_integrand, r_min, r_max, p, iv, tol);
   I_p *= 2.0/gsl_sf_gamma(p + 1.5);

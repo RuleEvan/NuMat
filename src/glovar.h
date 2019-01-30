@@ -10,18 +10,18 @@
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_errno.h>
-#include <gsl/gsl_sf_bessel.h>
+#include <gsl/gsl_sf.h>
 
 // Isotope setup
 #define A_NUC 76 // Atomic Mass
-#define NUM_SHELLS 260
+#define NUM_SHELLS 259
 #define A_FACTOR 9.155 // [MeV] Average nuclear excitation energy
-#define B_OSC 0.8
+#define B_OSC 2.927
 #define Z_ATOM 32 // Atomic Number
 #define HASH_SIZE 32452843
 
 // FILE SETUP
-#define DENSITY_FILE "ge76_fermi_density"
+#define DENSITY_FILE "ge-se-full"
 #define WFN_FILE_INITIAL "ne20_basis.trwfn"
 #define WFN_FILE_FINAL "mg20_basis.trwfn"
 #define ORBIT_FILE "sd.sps"

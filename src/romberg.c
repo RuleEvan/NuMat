@@ -106,7 +106,7 @@ double RombergIntegrator(double (*f)(double), double a, double b, double tol) {
 
 double Romberg3Vars(double (*f)(double, double, int), double a, double b, double p, int iv, double tol) {
   // Numerical integrator
-  int maxiter = 20;
+  int maxiter = 50;
   int maxj = 5;
   float h, g0, fourj, gmax, error, g1, romb;
   float g[maxj + 1];
