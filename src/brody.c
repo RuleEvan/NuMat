@@ -90,7 +90,7 @@ double brody_mosh(int n_rel, int l_rel, int n_cm, int l_cm, int l_tot, int n1, i
   return bm;
 }
 
-double compute_radial_matrix_element_scalar(int iv, int n1p, int l1p, int n2p, int l2p, int lambdap, int n1, int l1, int n2, int l2, int lambda, int s, int t) {
+double compute_radial_matrix_element_scalar(int iv, int n1p, int l1p, int n2p, int l2p, int n1, int l1, int n2, int l2, int lambda, int s, int t) {
   // Computes the matrix element 
   // <n1p l1p n2p l2p lambdap| V(r) | n1 l1 n2 l2 lambda>
   // in terms of Moshinsky brackets and Talmi integrals
@@ -203,10 +203,14 @@ double compute_radial_matrix_element_y2(int iv, int n1p, int l1p, int n2p, int l
           if (n_relp < 0) {continue;}
           double rm = brody_mosh(n_rel, l_rel, n_cm, l_cm, lambda, n1, l1, n2, l2);
           rm *= brody_mosh(n_relp, l_relp, n_cm, l_cm, lambdap, n1p, l1p, n2p, l2p);
+<<<<<<< HEAD
           rm *= sqrt(5/(4*M_PI))*sqrt(2*l_rel + 1)*sqrt(2*l_relp + 1)*sqrt(2*lambda + 1)*sqrt(2*lambdap + 1)*three_j(l_relp, 2, l_rel, 0, 0, 0)*six_j(l_relp, l_rel, 2, lambda, lambdap, l_cm)*pow(-1.0, l_cm);
+=======
+          rm *= sqrt(5/(4*M_PI))*sqrt(2*l_relp + 1)*sqrt(2*l_rel + 1)*sqrt(2*lambda + 1)*sqrt(2*lambdap + 1)*three_j(l_relp, 2, l_rel, 0, 0, 0)*six_j(l_relp, l_rel, 2, lambda, lambdap, l_cm)*pow(-1.0, l_cm);
+>>>>>>> bb97b0b4a648cc011adfaf2a7aeab75b9934a0e8
           if (rm == 0.0) {continue;}
           rm *= sym;
-          rm *= compute_potential(n_rel, n_relp, l_rel, l_relp, iv);
+          rm *= compute_potential(n_relp, n_rel, l_relp, l_rel, iv);
           mat += rm;
         }
       }

@@ -19,8 +19,6 @@ int main(int argc, char *argv[]) {
   printf("M_PP_GT_sd: %g\n", compute_matrix_element_sigma_tau_plus(19));
   printf("M_AP_T_sd: %g\n", compute_matrix_element_TT(18));
   printf("M_PP_T_sd: %g\n", compute_matrix_element_TT(20));
-//  printf("M_MM_GT_sd: %g\n", compute_matrix_element_sigma_tau_plus(21));
-//  printf("M_MM_T_sd: %g\n", compute_matrix_element_TT(22));
 
   return 0;
 }

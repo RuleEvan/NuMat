@@ -24,7 +24,7 @@ double b_coeff(double n, double l, double np, double lp, double p) {
 double compute_potential(double n, double np, double l, double lp, int iv) {
   // Sum the required Talmi integrals with the corresponding B coefficients
   double v = 0;
-  for (int ip = l + lp; ip <= l + lp + 2*n + 2*np; ip+=2) {
+  for (int ip = l + lp; ip <= l + lp + 2*n + 2*np; ip += 2) {
     double p = ip/2.0;
     v += b_coeff(n, l, np, lp, p)*talmi(p, iv);
   }
@@ -47,10 +47,12 @@ double talmi_integrand(double q, double p, int iv) {
   // The integrand of the Talmi integral
   // Plug in the required potential here
   double v = pow(q, 2.0*p + 2.0)*exp(-q*q);
+  if (iv == 0) {return v;}
   if (COR_FAC == 1) {
     double beta = exp(-1.1*pow(B_OSC*q, 2))*(1.0 - 0.68*pow(B_OSC*q,2.0));
     v *= pow(1.0 - beta, 2.0);
   }
+ 
   if (iv == 1) {
     v *= v_light_limit(q);
   } else if (iv == 2) {

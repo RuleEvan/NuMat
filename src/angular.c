@@ -32,7 +32,6 @@ double clebsch_gordan(double j1, double j2, double j, double m1, double m2, doub
   }
   double w = (2.0*j + 1.0)*gsl_sf_gamma(j1 + j2 - j + 1.0)*gsl_sf_gamma(j1 - m1 + 1.0)*gsl_sf_gamma(j2 - m2 + 1.0)*gsl_sf_gamma(j + m + 1.0)*gsl_sf_gamma(j - m + 1.0)/(gsl_sf_gamma(j1 + j2 + j + 2.0)*gsl_sf_gamma(j1 - j2 + j + 1.0)*gsl_sf_gamma(-j1 + j2 + j + 1.0)*gsl_sf_gamma(j1 + m1 + 1.0)*gsl_sf_gamma(j2 + m2 + 1.0));
   cg = sqrt(w)*f;
-//  printf("CG: %g\n", cg);
   return cg;
 } 
 
@@ -41,7 +40,6 @@ double three_j(double j1, double j2, double j3, double m1, double m2, double m3)
 */
 
   double three_j = pow(-1.0, j1 - j2 - m3)/sqrt(2.0*j3 + 1.0)*clebsch_gordan(j1, j2, j3, m1, m2, -m3);
-
   return three_j;
 }  
 
@@ -54,7 +52,7 @@ double six_j(double j1, double j2, double j3, double j4, double j5, double j6) {
     printf("Unallowed quantum numbers: %g, %g, %g, %g, %g, %g\n", j1, j2, j3, j4, j5, j6);
     return six_j;
   }
-  if ((j1 < abs(j2 - j3)) || (j1 > (j2 + j3)) || (j1 < abs(j5 - j6)) || (j1 > (j5 + j6)) || (j4 < abs(j2 - j6)) || (j4 > (j2 + j6)) || (j4 < abs(j5 - j3)) || (j4 > (j5 + j3))) {return six_j;}
+  if ((j1 < fabs(j2 - j3)) || (j1 > (j2 + j3)) || (j1 < fabs(j5 - j6)) || (j1 > (j5 + j6)) || (j4 < fabs(j2 - j6)) || (j4 > (j2 + j6)) || (j4 < fabs(j5 - j3)) || (j4 > (j5 + j3))) {return six_j;}
   double t1 = triangle(j1, j2, j3);
   double t2 = triangle(j1, j5, j6);
   double t3 = triangle(j4, j2, j6);
@@ -83,6 +81,7 @@ double six_j(double j1, double j2, double j3, double j4, double j5, double j6) {
     w += pow(-1.0, z)*gsl_sf_gamma(z + 2.0)/f;
   }
   six_j = t1*t2*t3*t4*w;
+//  printf("Six_j: %g, %g, %g, %g, %g, %g, %g\n", j1, j2, j3, j4, j5, j6, six_j);
   return six_j;
 }
 
@@ -97,10 +96,12 @@ double nine_j(double j11, double j12, double j13, double j21, double j22, double
   i_min = MAX(i_min, abs(j23 - j12));
 
   int i_max = MIN(j11 + j33, j32 + j21);
-  i_max = MIN(i_max, j12 + j23);
-  i_max = MIN(i_max, j21 + j32);
-  i_max = MIN(i_max, j11 + j33);
-  i_max = MIN(i_max, j23 + j12);
+  float i_min = MAX(fabs(j11 - j33),fabs(j32 - j21)); 
+  i_min = MAX(i_min, fabs(j12 - j23));
+  i_min = MAX(i_min, fabs(j21 - j32));
+  i_min = MAX(i_min, fabs(j11 - j33));
+  i_min = MAX(i_min, fabs(j23 - j12));
+
   if (i_min > i_max) {return 0.0;} 
 
   for (int i = 2*i_min; i <= 2*i_max; i += 2) {
@@ -112,4 +113,3 @@ double nine_j(double j11, double j12, double j13, double j21, double j22, double
 //  printf("%g %g %g %g %g %g %g %g %g %g\n", j11, j12, j13, j21, j22, j23, j31, j32, j33, nine_j); 
   return nine_j;
 }
-

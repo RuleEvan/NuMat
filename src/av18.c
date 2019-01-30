@@ -463,7 +463,7 @@ double compute_matrix_element_c(int iv, int in1p, double j1p, int in2p, double j
       double m1 = sqrt(2*t12 + 1);
       m1 *= fact;
       // Now perform Brody-Moshinsky transformation
-      m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, lambda, n1, l1, n2, l2, lambda, s, t12);
+      m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, n1, l1, n2, l2, lambda, s, t12);
       mat += m1;
     }
   }
@@ -507,7 +507,7 @@ double compute_matrix_element_tau(int iv, int in1p, double j1p, int in2p, double
       fact *= sqrt(2*j12 + 1.0);
       double m1 = 0.5*(t12*(t12 + 1.0) - 1.5);
       m1 *= fact;
-      m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, lambda, n1, l1, n2, l2, lambda, s, t12);
+      m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, n1, l1, n2, l2, lambda, s, t12);
       mat += m1;
     }
   }
@@ -551,7 +551,7 @@ double compute_matrix_element_sigma(int iv, int in1p, double j1p, int in2p, doub
       fact *= sqrt(2*j12 + 1.0);
       double m1 = 0.5*(s*(s + 1) - 1.5);
       m1 *= fact;
-      m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, lambda, n1, l1, n2, l2, lambda, s, t12);
+      m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, n1, l1, n2, l2, lambda, s, t12);
       mat += m1;
     }
   }
@@ -595,7 +595,7 @@ double compute_matrix_element_sigma_tau(int iv, int in1p, double j1p, int in2p, 
       fact *= sqrt(2*j12 + 1.0);
       double m1 = 0.5*(s*(s + 1) - 1.5)*0.5*(t12*(t12 + 1) - 1.5);
       m1 *= fact;
-      m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, lambda, n1, l1, n2, l2, lambda, s, t12);
+      m1 *= compute_radial_matrix_element_scalar(iv, n1p, l1p, n2p, l2p, n1, l1, n2, l2, lambda, s, t12);
       mat += m1;
     }
   }
