@@ -57,11 +57,7 @@ double compute_matrix_element_TT(int iv) {
     int lambda_max = MIN(l1 + l2, j12 + 1);
     int lambdap_min = MAX(abs(l1p - l2p), abs(j12p - 1));
     int lambdap_max = MIN(l1p + l2p, j12p + 1);
-<<<<<<< HEAD
-    for (lambda = abs(l1 - l2); lambda <= l1 + l2; lambda++) {
-=======
     for (lambda = lambda_min; lambda <= lambda_max; lambda++) {
->>>>>>> bb97b0b4a648cc011adfaf2a7aeab75b9934a0e8
       lambdap_min = MAX(lambdap_min, lambda - 2);
       lambdap_max = MIN(lambdap_max, lambda + 2);
       if (lambdap_min > lambdap_max) {continue;}
