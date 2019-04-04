@@ -1,21 +1,19 @@
 #include "matrix_element.h"
 
-double compute_matrix_element_TT(int iv) {
-  // Computes the total nuclear matrix element for the given operator
-  // m_sw = 0 computes M2
-  // Uses the density matrix method to decompose into two-body matrix elements
+double compute_matrix_element_TT(char* density_file, int iv) {
+  // Computes reduced nuclear matrix elements of the two-body tensor operator
+  // with arbitary radial part, specified by iv
   int in1, in2, ij1, ij2, ij12, it12;
   int in1p, in2p, ij1p, ij2p, ij12p, it12p;
 
   // Open the file containing density matrix coefficients
   FILE *in_file;
-  in_file = fopen(DENSITY_FILE, "r");
+  in_file = fopen(density_file, "r");
   double mat = 0.0;
   int i;
-  for (i = 0; i < NUM_SHELLS; i++) {
-    // Each line of the file corresponds to a nuclear shell
-    float density;
-    fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density);
+  // Each line of the file corresponds to a nuclear shell
+  float density;
+  while(fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density) == 13) {
 
     // The angular momentum are doubled in the file
     double j1 = ij1/2.0;
@@ -46,11 +44,15 @@ double compute_matrix_element_TT(int iv) {
    
     
     // The N's listed in the input file are energy quanta, we want radial quantum numbers
-    double n1 = (in1 - l1)/2.0;
+/*    double n1 = (in1 - l1)/2.0;
     double n2 = (in2 - l2)/2.0;
     double n1p = (in1p - l1p)/2.0;
-    double n2p = (in2p - l2p)/2.0;
- 
+    double n2p = (in2p - l2p)/2.0;*/
+     double n1 = (in1)/2.0;
+    double n2 = (in2)/2.0;
+    double n1p = (in1p)/2.0;
+    double n2p = (in2p)/2.0;
+
     double m4 = 0.0;
     // Convert from JJ to LS coupling (L is lambda)
     int lambda_min = MAX(abs(l1 - l2), abs(j12 - 1));
@@ -86,18 +88,17 @@ double compute_matrix_element_TT(int iv) {
 }
 
 
-double compute_matrix_element_tau_plus(int iv) {
+double compute_matrix_element_tau_plus(char* density_file, int iv) {
   double mat = 0.0;
   FILE *in_file;
-  in_file = fopen(DENSITY_FILE, "r");
+  in_file = fopen(density_file, "r");
 
-  for (int i = 0; i < NUM_SHELLS; i++) {
-    int in1, in2, ij1, ij2, ij12, it12;
-    int in1p, in2p, ij1p, ij2p, ij12p, it12p;
+  int in1, in2, ij1, ij2, ij12, it12;
+  int in1p, in2p, ij1p, ij2p, ij12p, it12p;
 
-    // Each line of the file corresponds to a nuclear shell
-    float density;
-    fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density);
+  // Each line of the file corresponds to a nuclear shell
+  float density;
+  while(fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density) == 13) {
     // The angular momentum are doubled in the file
     double j1 = ij1/2.0;
     double j2 = ij2/2.0;
@@ -126,10 +127,10 @@ double compute_matrix_element_tau_plus(int iv) {
 
     
     // The N's listed in the input file are energy quanta, we want radial quantum numbers
-    double n1 = (in1 - l1)/2.0;
-    double n2 = (in2 - l2)/2.0;
-    double n1p = (in1p - l1p)/2.0;
-    double n2p = (in2p - l2p)/2.0;
+    double n1 = (in1)/2.0;
+    double n2 = (in2)/2.0;
+    double n1p = (in1p)/2.0;
+    double n2p = (in2p)/2.0;
     double m4 = 0.0;
     // Convert from JJ to LS coupling (L is lambda)
     int lambda_min = MAX(abs(l1 - l2), abs(l1p - l2p));
@@ -160,19 +161,18 @@ double compute_matrix_element_tau_plus(int iv) {
   return mat;
 }
 
-double compute_matrix_element_sigma_tau_plus(int iv) {
+double compute_matrix_element_sigma_tau_plus(char* density_file, int iv) {
   // Computes the two-body nuclear matrix element sigma_1 dot sigma_2 tau_1+ tau_2+ with arbitrary radial function specified by iv
   FILE *in_file;
-  in_file = fopen(DENSITY_FILE, "r");
+  in_file = fopen(density_file, "r");
   double mat = 0.0;
  
-  for (int i = 0; i < NUM_SHELLS; i++) {
-    int in1, in2, ij1, ij2, ij12, it12;
-    int in1p, in2p, ij1p, ij2p, ij12p, it12p;
+  int in1, in2, ij1, ij2, ij12, it12;
+  int in1p, in2p, ij1p, ij2p, ij12p, it12p;
 
-    // Each line of the file corresponds to a nuclear shell
-    float density;
-    fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density);
+  // Each line of the file corresponds to a nuclear shell
+  float density;
+  while(fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density) == 13) {
 
     // The angular momentum are doubled in the file
     double j1 = ij1/2.0;
@@ -201,10 +201,10 @@ double compute_matrix_element_sigma_tau_plus(int iv) {
     else {l2p = 1;}
     
     // The N's listed in the input file are energy quanta, we want radial quantum numbers
-    double n1 = (in1 - l1)/2.0;
-    double n2 = (in2 - l2)/2.0;
-    double n1p = (in1p - l1p)/2.0;
-    double n2p = (in2p - l2p)/2.0;
+    double n1 = (in1)/2.0;
+    double n2 = (in2)/2.0;
+    double n1p = (in1p)/2.0;
+    double n2p = (in2p)/2.0;
  
     double m4 = 0.0;
     // Convert from JJ to LS coupling (L is lambda)
@@ -235,7 +235,7 @@ double compute_matrix_element_sigma_tau_plus(int iv) {
 }
 
 
-double compute_matrix_element_M_GT() {
+double compute_matrix_element_M_GT(char* density_file) {
   // no radial part
   // Computes the total nuclear matrix element for double Gamow-Teller operator sigma(1) dot sigma(2) [tau+(1) tau+(2)]_2
   // Uses the density matrix method to decompose into two-body matrix elements
@@ -244,14 +244,13 @@ double compute_matrix_element_M_GT() {
   
   // Open the file containing density matrix coefficients
   FILE *in_file;
-  in_file = fopen(DENSITY_FILE, "r");
+  in_file = fopen(density_file, "r");
   
   double mat = 0.0;
   int i;
-  for (i = 0; i < 99; i++) {
-    // Each line of the file corresponds to a nuclear shell
-    float density;
-    fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density);
+  // Each line of the file corresponds to a nuclear shell
+  float density;
+  while(fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density) == 13){
 
     // The angular momentum are doubled in the file
     double j1 = ij1/2.0;
@@ -317,7 +316,7 @@ double compute_matrix_element_M_GT() {
   return mat;
 }
 
-double compute_matrix_element_M_F() {
+double compute_matrix_element_M_F(char* density_file) {
   // No radial part
   // Computes the total nuclear matrix element for double Fermi operator [tau+ tau+]_2
   // Uses the density matrix method to decompose into two-body matrix elements
@@ -326,14 +325,13 @@ double compute_matrix_element_M_F() {
 
   // Open the file containing density matrix coefficients
   FILE *in_file;
-  in_file = fopen(DENSITY_FILE, "r");
+  in_file = fopen(density_file, "r");
   
   double mat = 0.0;
-  int i;
-  for (i = 0; i < NUM_SHELLS; i++) {
     // Each line of the file corresponds to a nuclear shell
-    float density;
-    fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density);
+  float density;
+  int n_spec;
+  while (fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density) == 13){
     // The angular momentum are doubled in the file
     double j1 = ij1/2.0;
     double j2 = ij2/2.0;
@@ -365,7 +363,68 @@ double compute_matrix_element_M_F() {
   return mat;
 }
 
-double compute_matrix_element_M_I2() {
+double compute_matrix_element_M_I1(char *density_file) {
+  // No radial part
+  // Computes the total nuclear matrix element for one-body identity operator
+  int in1, ij1; 
+  int in1p, ij1p;
+
+  // Open the file containing density matrix coefficients
+  FILE *in_file;
+  in_file = fopen(density_file, "r");
+  
+  double mat = 0.0;
+  float density;
+  while(fscanf(in_file, "%d %d %d %d %f\n", &in1p, &ij1p, &in1, &ij1, &density) == 5) {
+    // The angular momentum are doubled in the file
+    double j1 = ij1/2.0;
+    double j1p = ij1p/2.0;
+    double m4 = 0.0;
+    if ((in1 == in1p) && (j1 == j1p)) {
+      m4 = 1.0;
+    } else {
+      continue;
+    }
+    m4 *= sqrt(2.0*j1 + 1.0)*sqrt(2);
+    mat += m4*density;
+  }
+  fclose(in_file);
+                        
+  return mat;
+}
+
+double compute_matrix_element_M_F1(char *density_file) {
+  // No radial part
+  // Computes the total nuclear matrix element for one-body Fermi operator
+  int in1, ij1; 
+  int in1p, ij1p;
+
+  // Open the file containing density matrix coefficients
+  FILE *in_file;
+  in_file = fopen(density_file, "r");
+  
+  double mat = 0.0;
+  float density;
+  while(fscanf(in_file, "%d %d %d %d %f\n", &in1p, &ij1p, &in1, &ij1, &density) == 5) {
+    // The angular momentum are doubled in the file
+    double j1 = ij1/2.0;
+    double j1p = ij1p/2.0;
+    double m4 = 0.0;
+    if ((in1 == in1p) && (j1 == j1p)) {
+      m4 = 1.0;
+    } else {
+      continue;
+    }
+    m4 *= sqrt(2.0*j1 + 1.0)*sqrt(6)/2;
+    mat += m4*density;
+  }
+  fclose(in_file);
+                        
+  return mat;
+}
+
+
+double compute_matrix_element_M_I2(char *density_file) {
   // No radial part
   // Computes the total nuclear matrix element for two-body identity operator 1x1
   // Uses the density matrix method to decompose into two-body matrix elements
@@ -374,14 +433,13 @@ double compute_matrix_element_M_I2() {
 
   // Open the file containing density matrix coefficients
   FILE *in_file;
-  in_file = fopen(DENSITY_FILE, "r");
+  in_file = fopen(density_file, "r");
   
   double mat = 0.0;
   int i;
-  for (i = 0; i < NUM_SHELLS; i++) {
-    // Each line of the file corresponds to a nuclear shell
-    float density;
-    fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density);
+  float density;
+  int n_spec;
+  while(fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density) == 13) {
     // The angular momentum are doubled in the file
     double j1 = ij1/2.0;
     double j2 = ij2/2.0;
@@ -413,7 +471,7 @@ double compute_matrix_element_M_I2() {
 }
 
 
-double compute_matrix_element_M_JF() {
+double compute_matrix_element_M_JF(char* density_file) {
   // No radial part
   // Computes the total nuclear matrix element for the operator [J x J]_2
   // Uses the density matrix method to decompose into two-body matrix elements
@@ -422,14 +480,13 @@ double compute_matrix_element_M_JF() {
 
   // Open the file containing density matrix coefficients
   FILE *in_file;
-  in_file = fopen(DENSITY_FILE, "r");
+  in_file = fopen(density_file, "r");
   
   double mat = 0.0;
   int i;
-  for (i = 0; i < NUM_SHELLS; i++) {
-    // Each line of the file corresponds to a nuclear shell
-    double density;
-    fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%lf\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density);
+  // Each line of the file corresponds to a nuclear shell
+  double density;
+  while(fscanf(in_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%lf\n", &in1p, &ij1p, &in2p, &ij2p, &ij12p, &it12p, &in1, &ij1, &in2, &ij2, &ij12, &it12, &density) == 13) {
 
     // The angular momentum are doubled in the file
     double j1 = ij1/2.0;
@@ -447,11 +504,11 @@ double compute_matrix_element_M_JF() {
     }
    
     if ((in1 == in2p) && (j1 == j2p) && (in2 == in1p) && (j2 == j1p)) {
-      m4 += pow(-1.0,  j1 + j2 - j12 - t12)*nine_j(j1p, j2, 1, j2p, j1, 1, j12p, j12, 2);
+      m4 += pow(-1.0,  j1 + j2 + j12 + t12)*nine_j(j1p, j2, 1, j2p, j1, 1, j12p, j12, 2);
     }
     if (m4 == 0) {continue;}
-    m4 *= sqrt(j1*(2*j1 + 1)*(j1 + 1))*sqrt(j2*(2*j2 + 1)*(j2 + 1));
-    m4 *= sqrt(2.0*j12 + 1.0)*sqrt(2*j12p + 1.0)*sqrt(5.0);
+    m4 *= sqrt(j1*(2*j1 + 1)*(j1 + 1))*sqrt(j2*(2*j2 + 1)*(j2 + 1))*sqrt(5);
+    m4 *= sqrt(2.0*j12 + 1.0)*sqrt(2*j12p + 1.0);
     
     if ((in1 == in2) && (j1 == j2)) {m4 *= 1.0/sqrt(2.0);}
     if ((in1p == in2p) && (j1p == j2p)) {m4 *= 1.0/sqrt(2.0);}

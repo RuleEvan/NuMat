@@ -1,16 +1,4 @@
 #include "angular.h"
-double triangle(double a, double b, double c) {
-/* Computes the triangle coefficients necessary for sixj calculations
-   See Edmonds pg. 99
-*/
-
-  double tri = 0.0;
-  tri = gsl_sf_gamma(a + b - c + 1.0)*gsl_sf_gamma(a - b + c + 1.0)*gsl_sf_gamma(-a + b + c + 1.0);
-  tri *= 1.0/gsl_sf_gamma(a + b + c + 2.0);
-  tri = sqrt(tri);
-
-  return tri;
-}
 
 double clebsch_gordan(double j1, double j2, double j, double m1, double m2, double m) {
 /* Computes the Clebsch-Gordan coefficients between the uncoupled basis (j1, m1, j2, m2) and
@@ -19,19 +7,8 @@ double clebsch_gordan(double j1, double j2, double j, double m1, double m2, doub
 
   double cg = 0.0;
   if (((m1 + m2) != m) || (j > (j1 + j2)) || (j < abs(j1-j2))) {return cg;}
-  double f = 0.0;
-  int s_max = MIN(j1 - m1, j - m);
-  int s_min = MAX(0, ceil(j -j2 - m1));
-//  printf("Min/Max: %d %d\n", s_min, s_max);
-  for (int s = s_min; s <= s_max; s++) {
-    double d1 = j1 - m1 -s;
-    double d2 = j - m - s;
-    double d3 = j2 - j + m1 + s;
-    if ((d1 < 0) || (d2 < 0) || (d3 < 0)){continue;}
-    f += pow(-1.0, s + j1 - m1)*gsl_sf_gamma(j1 + m1 + s +1.0)*gsl_sf_gamma(j2 + j - m1 - s + 1.0)/(gsl_sf_gamma(s + 1.0)*gsl_sf_gamma(d1 + 1.0)*gsl_sf_gamma(d2 + 1.0)*gsl_sf_gamma(d3 + 1.0));
-  }
-  double w = (2.0*j + 1.0)*gsl_sf_gamma(j1 + j2 - j + 1.0)*gsl_sf_gamma(j1 - m1 + 1.0)*gsl_sf_gamma(j2 - m2 + 1.0)*gsl_sf_gamma(j + m + 1.0)*gsl_sf_gamma(j - m + 1.0)/(gsl_sf_gamma(j1 + j2 + j + 2.0)*gsl_sf_gamma(j1 - j2 + j + 1.0)*gsl_sf_gamma(-j1 + j2 + j + 1.0)*gsl_sf_gamma(j1 + m1 + 1.0)*gsl_sf_gamma(j2 + m2 + 1.0));
-  cg = sqrt(w)*f;
+  cg = pow(-1.0, -j1 + j2 - m)*sqrt(2*j + 1)*three_j(j1, j2, j, m1, m2, -m);  
+
   return cg;
 } 
 
@@ -39,13 +16,33 @@ double three_j(double j1, double j2, double j3, double m1, double m2, double m3)
 /* Computes the Wigner 3J symbol from the corresponding Clebsch-Gordan coefficient
 */
 
-  double three_j = pow(-1.0, j1 - j2 - m3)/sqrt(2.0*j3 + 1.0)*clebsch_gordan(j1, j2, j3, m1, m2, -m3);
+  double three_j = gsl_sf_coupling_3j((int) 2*j1, (int) 2*j2, (int) 2*j3, (int) 2*m1, (int) 2*m2, (int) 2*m3);
+;
   return three_j;
 }  
 
 double six_j(double j1, double j2, double j3, double j4, double j5, double j6) {
-/* Computes the Wigner six-j symbol using the Racah formual (Edmonds pg. 99)
-*/
+  double six_j = 0.0;
+
+  six_j = gsl_sf_coupling_6j((int) 2*j1, (int) 2*j2, (int) 2*j3, (int) 2*j4, (int) 2*j5, (int) 2*j6);
+
+  return six_j;
+}
+
+double nine_j(double j11, double j12, double j13, double j21, double j22, double j23, double j31, double j32, double j33) {
+  // Computes the Wigner 9J-symbol from the necessary 6J-symbols
+  double nine_j = 0.0;
+   
+  nine_j = gsl_sf_coupling_9j((int) 2*j11, (int) 2*j12, (int) 2*j13, (int) 2*j21, (int) 2*j22, (int) 2*j23, (int) 2*j31, (int) 2*j32, (int) 2*j33);
+//  printf("%g %g %g %g %g %g %g %g %g %g\n", j11, j12, j13, j21, j22, j23, j31, j32, j33, nine_j); 
+  return nine_j;
+}
+
+/* Deprecated code
+
+double six_j(double j1, double j2, double j3, double j4, double j5, double j6) {
+ Computes the Wigner six-j symbol using the Racah formual (Edmonds pg. 99)
+
 
   double six_j = 0;
   if ((j1 < 0) || (j2 < 0) || (j3 < 0) || (j4 < 0) || (j5 < 0) || (j6 < 0)) {
@@ -85,31 +82,40 @@ double six_j(double j1, double j2, double j3, double j4, double j5, double j6) {
   return six_j;
 }
 
-double nine_j(double j11, double j12, double j13, double j21, double j22, double j23, double j31, double j32, double j33) {
-  // Computes the Wigner 9J-symbol from the necessary 6J-symbols
-  double nine_j = 0.0;
-   
-/*  int i_min = MAX(abs(j11 - j33), abs(j32 - j21)); 
-  i_min = MAX(i_min, abs(j12 - j23));
-  i_min = MAX(i_min, abs(j21 - j32));
-  i_min = MAX(i_min, abs(j11 - j33));
-  i_min = MAX(i_min, abs(j23 - j12));
+double clebsch_gordan(double j1, double j2, double j, double m1, double m2, double m) {
+ Computes the Clebsch-Gordan coefficients between the uncoupled basis (j1, m1, j2, m2) and
+  the coupled basis (j1,j2; j,m)
 
-  int i_max = MIN(j11 + j33, j32 + j21);
-  float i_min = MAX(fabs(j11 - j33),fabs(j32 - j21)); 
-  i_min = MAX(i_min, fabs(j12 - j23));
-  i_min = MAX(i_min, fabs(j21 - j32));
-  i_min = MAX(i_min, fabs(j11 - j33));
-  i_min = MAX(i_min, fabs(j23 - j12));
 
-  if (i_min > i_max) {return 0.0;} 
-
-  for (int i = 2*i_min; i <= 2*i_max; i += 2) {
-    double k = i/2.0;
-    nine_j += pow(-1.0, i)*(i + 1.0)*six_j(j11, j21, j31, j32, j33, k)*six_j(j12, j22, j32, j21, k, j23)*six_j(j13, j23, j33, k, j11, j12);
+  double cg = 0.0;
+  if (((m1 + m2) != m) || (j > (j1 + j2)) || (j < abs(j1-j2))) {return cg;}
+  double f = 0.0;
+  int s_max = MIN(j1 - m1, j - m);
+  int s_min = MAX(0, ceil(j -j2 - m1));
+//  printf("Min/Max: %d %d\n", s_min, s_max);
+  for (int s = s_min; s <= s_max; s++) {
+    double d1 = j1 - m1 -s;
+    double d2 = j - m - s;
+    double d3 = j2 - j + m1 + s;
+    if ((d1 < 0) || (d2 < 0) || (d3 < 0)){continue;}
+    f += pow(-1.0, s + j1 - m1)*gsl_sf_gamma(j1 + m1 + s +1.0)*gsl_sf_gamma(j2 + j - m1 - s + 1.0)/(gsl_sf_gamma(s + 1.0)*gsl_sf_gamma(d1 + 1.0)*gsl_sf_gamma(d2 + 1.0)*gsl_sf_gamma(d3 + 1.0));
   }
-*/
-  nine_j = gsl_sf_coupling_9j((int) 2*j11, (int) 2*j12, (int) 2*j13, (int) 2*j21, (int) 2*j22, (int) 2*j23, (int) 2*j31, (int) 2*j32, (int) 2*j33);
-//  printf("%g %g %g %g %g %g %g %g %g %g\n", j11, j12, j13, j21, j22, j23, j31, j32, j33, nine_j); 
-  return nine_j;
+  double w = (2.0*j + 1.0)*gsl_sf_gamma(j1 + j2 - j + 1.0)*gsl_sf_gamma(j1 - m1 + 1.0)*gsl_sf_gamma(j2 - m2 + 1.0)*gsl_sf_gamma(j + m + 1.0)*gsl_sf_gamma(j - m + 1.0)/(gsl_sf_gamma(j1 + j2 + j + 2.0)*gsl_sf_gamma(j1 - j2 + j + 1.0)*gsl_sf_gamma(-j1 + j2 + j + 1.0)*gsl_sf_gamma(j1 + m1 + 1.0)*gsl_sf_gamma(j2 + m2 + 1.0));
+  cg = sqrt(w)*f;
+  return cg;
+} 
+
+double triangle(double a, double b, double c) {
+ Computes the triangle coefficients necessary for sixj calculations
+   See Edmonds pg. 99
+
+
+  double tri = 0.0;
+  tri = gsl_sf_gamma(a + b - c + 1.0)*gsl_sf_gamma(a - b + c + 1.0)*gsl_sf_gamma(-a + b + c + 1.0);
+  tri *= 1.0/gsl_sf_gamma(a + b + c + 2.0);
+  tri = sqrt(tri);
+
+  return tri;
 }
+
+*/

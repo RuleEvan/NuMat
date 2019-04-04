@@ -34,7 +34,7 @@ double compute_potential(double n, double np, double l, double lp, int iv) {
 double talmi(double p, int iv) {
   // Compute the order p Talmi integral
   // Set the limits of the integral and the error tolerance
-  double r_min = 0.001;
+  double r_min = 0.0001;
   double r_max = 10.0;
   double tol = pow(10, -6);
   double I_p = Romberg3Vars(&talmi_integrand, r_min, r_max, p, iv, tol);

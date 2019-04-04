@@ -3,7 +3,7 @@
 void generate_0vbb_matrix_elements() {
 /* Computes and outputs all of the nuclear matrix elements required
 for neutrino-less double beta decay */
-
+/*
   double m_f = compute_matrix_element_tau_plus(-1);
   double m_f_sd = compute_matrix_element_tau_plus(-2);
   double m_gt_aa = compute_matrix_element_sigma_tau_plus(-1);
@@ -22,7 +22,7 @@ for neutrino-less double beta decay */
   double m_gt_mm_sd = compute_matrix_element_sigma_tau_plus(-8);
   double m_t_mm = compute_matrix_element_TT(-7);
   double m_t_ap_mm = compute_matrix_element_TT(-8);
- 
+*/ 
   
   return;
 }
